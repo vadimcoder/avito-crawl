@@ -1,0 +1,16 @@
+{
+  "name": "avito1",
+  "version": "1.0.0",
+  "description": "avito contest",
+  "main": "index.js",
+  "repository": {},
+  "author": "Vadim Vinogradov <vadim.vinogradov@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "lodash": "^4.17.4",
+    "mongodb": "~2.2.22",
+    "request": "~2.79.0",
+    "request-promise-native": "~1.0.3"
+  }
+}
