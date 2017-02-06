@@ -80,50 +80,52 @@ async function crawlAvito(task1Collection) {
 
     let totalPageCount = 0;
 
-    for (let metroSet of metroSets) {
-        console.log(`pmin: ${metroSet.pmin} pmax: ${metroSet.pmax}`);
+    while(true) {
+        for (let metroSet of metroSets) {
+            console.log(`pmin: ${metroSet.pmin} pmax: ${metroSet.pmax}`);
 
-        let p = 1, pageCount = 0;
-        while(true) {
-            try {
-                let response = await request({
-                    uri: (metroSet.pmax ?
-                        `https://www.avito.ru/moskva/kollektsionirovanie/monety?p=${p}&view=list&pmin=${metroSet.pmin}&pmax=${metroSet.pmax}` :
-                        `https://www.avito.ru/moskva/kollektsionirovanie/monety?p=${p}&view=list&pmin=${metroSet.pmin}`),
-                    resolveWithFullResponse: true,
-                    followRedirect: function () {
-                        return false;
-                    },
-                    headers: {
-                        'User-Agent': 'Vadim Vinogradov (vadim.vinogradov@gmail.com). Avito BI contest. Sorry :)'
-                    },
-                    simple: false
-                });
+            let p = 1, pageCount = 0;
+            while(true) {
+                try {
+                    let response = await request({
+                        uri: (metroSet.pmax ?
+                            `https://www.avito.ru/moskva/kollektsionirovanie/monety?p=${p}&view=list&pmin=${metroSet.pmin}&pmax=${metroSet.pmax}` :
+                            `https://www.avito.ru/moskva/kollektsionirovanie/monety?p=${p}&view=list&pmin=${metroSet.pmin}`),
+                        resolveWithFullResponse: true,
+                        followRedirect: function () {
+                            return false;
+                        },
+                        headers: {
+                            'User-Agent': 'Vadim Vinogradov (vadim.vinogradov@gmail.com). Avito BI contest. Sorry :)'
+                        },
+                        simple: false
+                    });
 
-                if (response.statusCode === 200) {
-                    const $ = cheerio.load(response.body);
-                    await grepData($, task1Collection);
-                    pageCount = getActualPageCountFromCurrentPage($);
-                    console.log(p, pageCount);
-                    if (pageCount === undefined) {
-                        // we are on the last page
-                        totalPageCount += p;
-                        break;
+                    if (response.statusCode === 200) {
+                        const $ = cheerio.load(response.body);
+                        await grepData($, task1Collection);
+                        pageCount = getActualPageCountFromCurrentPage($);
+                        console.log(p, pageCount);
+                        if (pageCount === undefined) {
+                            // we are on the last page
+                            totalPageCount += p;
+                            break;
+                        } else {
+                            assert(p < pageCount);
+                            p++;
+                        }
                     } else {
-                        assert(p < pageCount);
-                        p++;
+                        console.log(`FAIL: `);
+                        process.exit(0);
                     }
-                } else {
-                    console.log(`FAIL: `);
-                    process.exit(0);
+                } catch (exception) {
+                    console.log(`Caught exception: ${exception}. Waiting...`);
+                    await mySetTimeout();
                 }
-            } catch (exception) {
-                console.log(`Caught exception: ${exception}. Waiting...`);
-                await mySetTimeout();
             }
-        }
 
-        console.log(`totalPageCount: ${totalPageCount}`);
+            console.log(`totalPageCount: ${totalPageCount}`);
+        }
     }
 }
 
