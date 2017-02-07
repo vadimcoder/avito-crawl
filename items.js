@@ -78,9 +78,9 @@ async function crawlAvito(task1Collection) {
         {pmin: 10001}
     ];
 
-    let totalPageCount = 0;
-
     while(true) {
+        let totalPageCount = 0;
+
         for (let metroSet of metroSets) {
             console.log(`pmin: ${metroSet.pmin} pmax: ${metroSet.pmax}`);
 
