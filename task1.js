@@ -55,8 +55,15 @@ async function main(db) {
         count(item);
     }
 
-    console.log(hasYears);
-    console.log(issuedBefore2000);
+    const totalCount = await task1Collection.find({is_expired: false}).count();
+
+    console.log(`totalCount: ${totalCount}`);
+    console.log(`hasYears: ${hasYears}`);
+    console.log(`hasNoYears: ${totalCount - hasYears}`);
+    console.log(`issuedBefore2000: ${issuedBefore2000}`);
+    const issuedAfter2000 = hasYears - issuedBefore2000;
+    console.log(`issuedAfter2000/: ${issuedAfter2000}`);
+    console.log(`issuedBefore2000/issuedAfter2000: ${issuedBefore2000/issuedAfter2000}`);
 }
 
 function gracefulExit() {
